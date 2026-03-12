@@ -4,7 +4,7 @@ resource "aws_security_group_rule" "bastion_internet" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = "local.bastion_sg_id"
+  security_group_id = local.bastion_sg_id
 }
 
 resource "aws_security_group_rule" "mongodb_bastion" {
@@ -13,7 +13,7 @@ resource "aws_security_group_rule" "mongodb_bastion" {
   to_port           = 22
   protocol          = "tcp"
   source_security_group_id = local.bastion_sg_id
-  security_group_id = "local.mongodb_sg_id"
+  security_group_id = local.mongodb_sg_id
 }
 
 resource "aws_security_group_rule" "mongodb_catalogue" {
@@ -22,7 +22,7 @@ resource "aws_security_group_rule" "mongodb_catalogue" {
   to_port           = 27017
   protocol          = "tcp"
   source_security_group_id = local.catalogue_sg_id
-  security_group_id = "local.mongodb_sg_id"
+  security_group_id = local.mongodb_sg_id
 }
 
 resource "aws_security_group_rule" "mongodb_user" {
@@ -31,5 +31,5 @@ resource "aws_security_group_rule" "mongodb_user" {
   to_port           = 27017
   protocol          = "tcp"
   source_security_group_id = local.user_sg_id
-  security_group_id = "local.mongodb_sg_id"
+  security_group_id = local.mongodb_sg_id
 }
