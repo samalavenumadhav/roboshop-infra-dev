@@ -4,6 +4,7 @@ resource "aws_instance" "bastion" {
   instance_type               = "t3.micro"
   subnet_id                   = local.public_subnet_id
   vpc_security_group_ids      = [local.bastion_sg_id]
+  iam_instance_profile        = aws_iam_instance_profile.bastion.name
 
 
   tags = merge(
@@ -32,7 +33,7 @@ resource "aws_iam_role" "bastion" {
       },
     ]
   })
-     tags = merge(
+tags = merge(
     {
         Name = "RoboshopDevBastion"
     },
@@ -40,7 +41,12 @@ resource "aws_iam_role" "bastion" {
   )
 }
 #Permissions
-/* resource "aws_iam_role_policy_attachment" "bastion" {
-  role       = 
-  policy_arn = aws_iam_policy.policy.arn
-} */
+resource "aws_iam_role_policy_attachment" "bastion" {
+  role       = aws_iam_role.bastion.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
+
+resource "aws_iam_instance_profile" "bastion" {
+  name = "${var.project}-${var.environment}-bastion"
+   role       = aws_iam_role.bastion.name
+}
