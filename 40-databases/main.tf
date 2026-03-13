@@ -1,10 +1,8 @@
 resource "aws_instance" "mongodb" {
-  ami                         = local.ami_id
-  instance_type               = "t3.micro"
-  subnet_id                   = local.database_subnet_id
-  vpc_security_group_ids      = [local.mongodb_sg_id]
-
-
+  ami           = local.ami_id
+  instance_type = "t3.micro"
+  subnet_id = local.database_subnet_id
+  vpc_security_group_ids = [local.mongodb_sg_id]
 
   tags = merge(
     {
@@ -26,18 +24,15 @@ resource "terraform_data" "mongodb" {
     host     = aws_instance.mongodb.private_ip
   }
 
-    provisioner "file" {
-    source      = "bootstrap.sh"
-    destination = "/tmp/bootstrap.sh"
+  provisioner "file" {
+    source      = "bootstrap.sh" # Local file path
+    destination = "/tmp/bootstrap.sh"    # Destination path on the remote machine
   }
 
-
-# Use the remote-exec provisioner to run the script
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/bootstrap.sh",
-      "sudo sh /tmp/bootstrap.sh"
-      
+        "chmod +x /tmp/bootstrap.sh",
+        "sudo sh /tmp/bootstrap.sh mongodb"
     ]
   }
 }
