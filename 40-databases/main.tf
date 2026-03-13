@@ -1,4 +1,4 @@
-resource "aws_instance" "mongodb" {
+resource "aws_instance" "bastion" {
   ami                         = local.ami_id
   instance_type               = "t3.micro"
   subnet_id                   = local.database_subnet_id
