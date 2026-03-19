@@ -5,7 +5,7 @@ variable "environment" {
     default = "dev"
 }
 variable "zone_id" {
-    default = "Z0935977CBYGA1Y5S3YB"
+    default = "Z0935977CBYGA1Y5S3YBs"
 }
 variable "domain_name" {
     default = "samala.online"
