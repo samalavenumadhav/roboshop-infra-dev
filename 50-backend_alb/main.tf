@@ -15,10 +15,6 @@ resource "aws_lb" "backend_alb" {
   )
 }
 
-resource "aws_lb" "front_end" {
-  # ...
-}
-
 resource "aws_lb_listener" "backend_alb" {
   load_balancer_arn = aws_lb.backend_alb.arn
   port              = "80"
@@ -35,7 +31,7 @@ resource "aws_lb_listener" "backend_alb" {
   }
 }
 
-resource "aws_route53_record" "www" {
+resource "aws_route53_record" "backend_alb" {
   zone_id = var.zone_id
   name    = "*.backend_alb-${var.environment}.${var.domain_name}"
   type    = "A"
