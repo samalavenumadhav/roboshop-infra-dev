@@ -46,7 +46,7 @@ resource "aws_ec2_instance_state" "catalogue" {
 }
 
 resource "aws_ami_from_instance" "catalogue" {
-  name               = "${var.project}-${var.environment}-catalogue"
+  name = "${var.project}-${var.environment}-catalogue-${var.app_version}-${aws_instance.catalogue.id}"
   source_instance_id = aws_instance.catalogue.id
    depends_on = [aws_ec2_instance_state.catalogue]
   # Optional: Add description, tags, etc.
@@ -164,7 +164,7 @@ resource "aws_autoscaling_policy" "catalogue" {
   autoscaling_group_name = aws_autoscaling_group.catalogue.name
   name                   = "${var.project}-${var.environment}-catalogue"
   policy_type            = "TargetTrackingScaling"
-  estimatedestimated_instance_warmup = 120
+  estimated_instance_warmup = 120
 
   target_tracking_configuration {
       predefined_metric_specification {
@@ -186,7 +186,18 @@ resource "aws_lb_listener_rule" "catalogue" {
 
   condition {
    host_header {
-     values = ["catalogue.backend_alb-${var.environment}.${var.domain_name}"]
+     values = ["catalogue.backend-alb-${var.environment}.${var.domain_name}"]
    }
+  }
+}
+
+resource "terraform_data" "catalogue_delete" {
+  triggers_replace = [
+    aws_instance.catalogue.id
+  ]
+  depends_on = [aws_autoscaling_policy.catalogue]
+
+  provisioner "local-exec" {
+    command = "aws ec2 terminate-instances --instance-ids ${aws_instance.catalogue.id} "
   }
 }
