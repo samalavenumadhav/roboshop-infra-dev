@@ -34,12 +34,12 @@ resource "terraform_data" "catalogue" {
   provisioner "remote-exec" {
     inline = [
         "chmod +x /tmp/bootstrap.sh",
-        "sudo sh /tmp/bootstrap.sh catalogue ${var.app_version}"
+        "sudo sh /tmp/bootstrap.sh catalogue dev"
     ]
   }
 }
 
-resource "aws_ec2_instance_state" "catalogue" {
-  instance_id = aws_instance.catalogue.id
-  state       = "stopped"
-}
+# resource "aws_ec2_instance_state" "catalogue" {
+#   instance_id = aws_instance.catalogue.id
+#   state       = "stopped"
+# }
