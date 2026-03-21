@@ -2,8 +2,8 @@ resource "aws_lb" "frontend_alb" {
   name               = "${var.project}-${var.environment}-frontend_alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [local.frontend_alb_sg.id]
-  subnets            = local.public_subnet.ids
+  security_groups    = [local.frontend_alb_sg_id]
+  subnets            = local.public_subnet_ids
 
   enable_deletion_protection = false
 
