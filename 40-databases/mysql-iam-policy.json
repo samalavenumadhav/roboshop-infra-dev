@@ -4,9 +4,11 @@
     {
       "Effect": "Allow",
       "Action": [
-        "secretsmanager:GetSecretValue"
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "kms:Decrypt"
       ],
-      "Resource": "arn:aws:secretsmanager:us-east-1:160885265516:secret:roboshop/${environment}/mysql_root_password*"
+      "Resource": "arn:aws:ssm:us-east-1:160885265516:parameter/roboshop/${environment}/*"
     }
   ]
 }
