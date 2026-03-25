@@ -23,7 +23,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
-    viewer_protocol_policy = "https_only"
+    viewer_protocol_policy = "https-only"
     cache_policy_id     = local.CachingDisabled
   }
 
@@ -33,7 +33,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD","OPTIONS"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
-    viewer_protocol_policy = "https_only"
+    viewer_protocol_policy = "https-only"
     cache_policy_id     = local.CachingOptimized
   }
 
@@ -43,7 +43,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD","OPTIONS"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
-    viewer_protocol_policy = "https_only"
+    viewer_protocol_policy = "https-only"
     cache_policy_id     = local.CachingOptimized
   }
 
@@ -65,7 +65,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
   
   viewer_certificate {
     acm_certificate_arn = local.acm_certificate_arn
-    ssl_support_method = "sni_only"
+    ssl_support_method = "sni-only"
   }
 }
 
