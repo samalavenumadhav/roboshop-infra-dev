@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "roboshop" {
   enabled             = true
   is_ipv6_enabled     = false
    
-  aliases = ["${var.project}-${var.environment}-${var.domain_name}"]
+  aliases = ["${var.project}-${var.environment}.${var.domain_name}"]
 
 
   # AWS Managed Caching Policy (CachingDisabled)
