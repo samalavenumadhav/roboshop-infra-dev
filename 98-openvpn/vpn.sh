@@ -1,37 +1,46 @@
 #!/bin/bash
-set -euo pipefail
+set -e
 
-SCRIPTS="/usr/local/openvpn_as/scripts"
-USERNAME="openvpn"
-PASSWORD='Openvpn@123'   # Use SSM or Secrets Manager in production
+yum update -y
 
-# Wait until Access Server UI is ready
-until curl -ks https://127.0.0.1:943/ >/dev/null 2>&1; do sleep 3; done
+# Install OpenVPN
+yum install -y openvpn easy-rsa
 
-# 1. Accept the license agreement
-$SCRIPTS/sacli --key 'eula_accepted' --value 'true' ConfigPut
+# Setup PKI
+mkdir -p /etc/openvpn/easy-rsa
+cp -r /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
+cd /etc/openvpn/easy-rsa
 
-# 2. Set admin user and password
-$SCRIPTS/sacli --user "$USERNAME" --new_pass "$PASSWORD" SetLocalPassword
-$SCRIPTS/sacli --user "$USERNAME" --key 'prop_superuser' --value 'true' UserPropPut
+./easyrsa init-pki
+echo | ./easyrsa build-ca nopass
+./easyrsa gen-req server nopass
+echo yes | ./easyrsa sign-req server server
+./easyrsa gen-dh
 
-# 3. VPN port and protocol
-$SCRIPTS/sacli --key 'vpn.server.port'     --value '1194' ConfigPut
-$SCRIPTS/sacli --key 'vpn.server.protocol' --value 'udp'  ConfigPut
+# Copy certs
+cp pki/ca.crt pki/private/server.key pki/issued/server.crt pki/dh.pem /etc/openvpn/
 
-# 4. DNS configuration: use Access Server host DNS
-$SCRIPTS/sacli --key 'vpn.client.dns.server_auto' --value 'true' ConfigPut
-$SCRIPTS/sacli --key 'cs.prof.defaults.dns.0' --value '8.8.8.8' ConfigPut
-$SCRIPTS/sacli --key 'cs.prof.defaults.dns.1' --value '1.1.1.1' ConfigPut
+# Basic config
+cat > /etc/openvpn/server.conf <<EOF
+port 1194
+proto udp
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+server 10.8.0.0 255.255.255.0
+keepalive 10 120
+persist-key
+persist-tun
+status openvpn-status.log
+verb 3
+EOF
 
-# 5. Route all client traffic through the VPN
-$SCRIPTS/sacli --key 'vpn.client.routing.reroute_gw' --value 'true' ConfigPut
+# Enable IP forwarding
+echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sysctl -p
 
-# 6. Block access to VPN server services from clients (your latest request)
-$SCRIPTS/sacli --key 'vpn.server.routing.gateway_access' --value 'true' ConfigPut
-
-systemctl restart openvpnas
-
-# 7. Save and start
-$SCRIPTS/sacli ConfigSync
-$SCRIPTS/sacli start
+# Start OpenVPN
+systemctl start openvpn@server
+systemctl enable openvpn@server
