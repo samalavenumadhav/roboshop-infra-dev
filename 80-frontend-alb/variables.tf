@@ -1,14 +1,14 @@
 variable "project" {
-    default = "roboshop"
+  default = "roboshop"
 }
 variable "environment" {
-    default = "dev"
+  default = "dev"
 }
 variable "zone_id" {
-    default = "Z0935977CBYGA1Y5S3YB"
+  default = "Z0935977CBYGA1Y5S3YB"
 }
 variable "domain_name" {
-    default = "samala.online"
+  default = "samala.online"
 }
 
 
