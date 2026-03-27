@@ -5,15 +5,15 @@ resource "aws_cloudfront_distribution" "roboshop" {
     origin_id   = "frontend-${var.environment}.${var.domain_name}"
 
     custom_origin_config {
-      http_port = 80
-      https_port = 443
+      http_port              = 80
+      https_port             = 443
       origin_protocol_policy = "https-only"
-      origin_ssl_protocols = ["TLSv1.2","TLSv1.1"]
+      origin_ssl_protocols   = ["TLSv1.2", "TLSv1.1"]
     }
   }
-  enabled             = true
-  is_ipv6_enabled     = false
-   
+  enabled         = true
+  is_ipv6_enabled = false
+
   aliases = ["${var.project}-${var.environment}.${var.domain_name}"]
 
 
@@ -24,27 +24,27 @@ resource "aws_cloudfront_distribution" "roboshop" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
     viewer_protocol_policy = "https-only"
-    cache_policy_id     = local.CachingDisabled
+    cache_policy_id        = local.CachingDisabled
   }
 
-   ordered_cache_behavior {   #0
+  ordered_cache_behavior { #0
     # Using the CachingOptimized managed policy ID:
-    path_pattern = "/media/*"
+    path_pattern           = "/media/*"
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD","OPTIONS"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
     viewer_protocol_policy = "https-only"
-    cache_policy_id     = local.CachingOptimized
+    cache_policy_id        = local.CachingOptimized
   }
 
-  ordered_cache_behavior {  #1
+  ordered_cache_behavior { #1
     # Using the CachingOptimized managed policy ID:
-    path_pattern = "/images/*"
+    path_pattern           = "/images/*"
     allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD","OPTIONS"]
+    cached_methods         = ["GET", "HEAD", "OPTIONS"]
     target_origin_id       = "frontend-${var.environment}.${var.domain_name}"
     viewer_protocol_policy = "https-only"
-    cache_policy_id     = local.CachingOptimized
+    cache_policy_id        = local.CachingOptimized
   }
 
   price_class = "PriceClass_All"
@@ -58,14 +58,14 @@ resource "aws_cloudfront_distribution" "roboshop" {
   }
   tags = merge(
     {
-        Name = "${var.project}-${var.environment}-frontend"
+      Name = "${var.project}-${var.environment}-frontend"
     },
     local.common_tags
   )
-  
+
   viewer_certificate {
     acm_certificate_arn = local.acm_certificate_arn
-    ssl_support_method = "sni-only"
+    ssl_support_method  = "sni-only"
   }
 }
 
